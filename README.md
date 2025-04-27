@@ -1,6 +1,12 @@
-# MediChat
+# MediChat :hospital:
+
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
+[![CI/CD](https://github.com/jalandhar04/MediChat/actions/workflows/deploy.yml/badge.svg)](https://github.com/jalandhar04/MediChat/actions)
 
 An end-to-end medical chatbot powered by Generative AI. Ask health-related questions and get informed, accurate answers in real-time.
+
+![image](https://github.com/user-attachments/assets/65324687-98dd-4bca-b84e-2059e4157a24)
 
 ---
 
@@ -29,11 +35,12 @@ An end-to-end medical chatbot powered by Generative AI. Ask health-related quest
 
 ## Features
 
-- Conversational medical assistant using **Gemini 2.0 Flash**
-- Semantic search via **HuggingFace** embeddings and **Pinecone** vector database
-- Built with **Python**, **Flask**, and **LangChain**
-- Modern, responsive chat UI with typing animations
-- Easy local setup & AWS CI/CD deployment with GitHub Actions
+- :brain: Medical AI Assistant with **Gemini 2.0 Flash** LLM
+- :mag_right: Semantic search using **HuggingFace** embeddings & **Pinecone** vector DB
+- :gear: Built with **Python 3.12**, **Flask**, and **LangChain**
+- :art: Modern glassmorphism UI with real-time interactions
+- :rocket: Automated AWS deployment via GitHub Actions CI/CD
+- :warning: Built-in safety checks for emergency responses
 
 ## Tech Stack
 
@@ -44,11 +51,23 @@ An end-to-end medical chatbot powered by Generative AI. Ask health-related quest
 - **Frontend**: HTML5, Bootstrap 5, jQuery, CSS Glassmorphism
 - **CI/CD & Hosting**: Docker, AWS ECR, EC2, GitHub Actions
 
+| Category            | Technologies                          |
+|---------------------|---------------------------------------|
+| Backend             | Python 3.12, Flask, LangChain         |
+| AI/LLM              | Google Gemini 2.0 Flash, HuggingFace  |
+| Vector Database     | Pinecone                              |
+| Frontend            | Bootstrap 5, CSS Glassmorphism        |
+| Infrastructure      | Docker, AWS ECR/EC2, GitHub Actions   |
+
 ## Prerequisites
 
 - [Conda](https://docs.conda.io/en/latest/) installed
-- AWS account (for deployment)
-- GitHub account
+- :snake: Python 3.12+
+- :whale: Docker 20.10+
+- :key: API Keys:
+  - Google Gemini API Key
+  - Pinecone API Key
+  - AWS IAM User with EC2/ECR access
 
 ## Installation
 
@@ -117,31 +136,25 @@ Automate build & deployment via GitHub Actions.
 
 ### 2. ECR & Docker
 
-1. Build Docker image:
+ 1. Build Docker image:
    ```bash
+    docker build -t medicalchatbot .
    ```
-
-docker build -t medicalchatbot .
-
-````
 2. Tag & push to ECR:
-   ```bash
+  ```bash
 aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 970547337635.dkr.ecr.ap-south-1.amazonaws.com
 docker tag medicalchatbot:latest 970547337635.dkr.ecr.ap-south-1.amazonaws.com/medicalchatbot:latest
 docker push 970547337635.dkr.ecr.ap-south-1.amazonaws.com/medicalchatbot:latest
-````
+ ```
 
 ### 3. EC2 Self-Hosted Runner
 
-1. Launch Ubuntu EC2 instance
-2. Install Docker:
+  1. Launch Ubuntu EC2 instance
+  2. Install Docker:
    ```bash
-   ```
-
 sudo apt-get update -y curl -fsSL [https://get.docker.com](https://get.docker.com) -o get-docker.sh sudo sh get-docker.sh sudo usermod -aG docker \$USER newgrp docker
-
-```
-3. Configure as GitHub Actions runner (Settings → Actions → Runners)
+   ```
+  3. Configure as GitHub Actions runner (Settings → Actions → Runners)
 
 ### 4. GitHub Secrets
 
@@ -165,5 +178,3 @@ In your repo settings, add:
 ## License
 
 MIT © [https://jalandharpaswan.com](https://jalandharpaswan.com)
-
-```
