@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MediChat – AI Medical Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap & FontAwesome -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- my custom CSS -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+  />
+</head>
+<body>
+  <div class="container-fluid h-100">
+    <div class="row justify-content-center h-100">
+      <div class="col-12 col-md-10 col-lg-8 col-xl-6 chat-container">
+        <div class="card glass-card">
+          
+          <!-- header -->
+          <div class="card-header chat-header">
+            <div class="d-flex align-items-center">
+              <div class="avatar-container">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/387/387569.png"
+                  class="bot-avatar"
+                />
+                <span class="online-status"></span>
+              </div>
+              <div class="header-text">
+                <h2 class="bot-name">MediChat Assistant</h2>
+                <p class="bot-status">Online • Ready to help</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- messages -->
+          <div id="messageFormeight" class="card-body message-container">
+            <div class="message-bot">
+              <div class="avatar-container">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/387/387569.png"
+                  class="bot-avatar"
+                />
+                <span class="online-status"></span>
+              </div>
+              <div class="message-content">
+                <p>
+                  Hello! I'm MediChat, your intelligent health assistant.
+                  How can I help you today?
+                </p>
+                <span class="message-time"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- input -->
+          <div class="card-footer chat-input-container">
+            <form id="messageArea" class="input-group">
+              <input
+                type="text"
+                id="text"
+                name="msg"
+                class="form-control chat-input"
+                placeholder="Type your message..."
+                autocomplete="off"
+                required
+              />
+              <button class="btn send-button" type="submit">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery & Bootstrap bundle -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+  ></script>
+
+  <!-- Chat logic -->
+  <script>
+    $(function () {
+      const $msgContainer = $("#messageFormeight");
+
+      function scrollToBottom() {
+        $msgContainer.stop().animate(
+          { scrollTop: $msgContainer[0].scrollHeight },
+          600
+        );
+      }
+
+      function getCurrentTime() {
+        const d = new Date();
+        let h = d.getHours(),
+          m = d.getMinutes(),
+          ampm = h >= 12 ? "PM" : "AM";
+        h = h % 12 || 12;
+        m = m < 10 ? "0" + m : m;
+        return h + ":" + m + " " + ampm;
+      }
+
+      function typeBotResponse(text, $element) {
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i < text.length) {
+            $element.append(text.charAt(i++));
+            scrollToBottom();
+          } else {
+            clearInterval(interval);
+          }
+        }, 25);
+      }
+
+      // 1) Set welcome-time dynamically
+      $(".message-bot .message-time").text(getCurrentTime());
+
+      $("#messageArea").on("submit", function (e) {
+        e.preventDefault();
+        const raw = $("#text").val().trim();
+        if (!raw) return;
+
+        const time = getCurrentTime();
+
+        // 2) append user message
+        const userMsg = $(`
+          <div class="message-user d-flex justify-content-end mb-4">
+            <div class="message-content">
+              <p>${raw}</p>
+              <span class="message-time">${time}</span>
+            </div>
+            <div class="avatar-container">
+              <img
+                src="https://i.ibb.co/d5b84Xw/Untitled-design.png"
+                class="user-avatar rounded-circle"
+              />
+            </div>
+          </div>
+        `);
+        $msgContainer.append(userMsg);
+        $("#text").val("");
+        scrollToBottom();
+
+        // 3) show typing indicator right after user msg
+        const typing = $(`
+          <div class="typing-indicator mb-4">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        `);
+        $msgContainer.append(typing);
+        scrollToBottom();
+
+        // 4) fetch bot reply
+        $.post("/get", { msg: raw }).done((reply) => {
+          setTimeout(() => {
+            typing.remove();
+
+            // 5) append empty container w/ unique ID
+            const botWrapper = $(`
+              <div class="message-bot d-flex mb-4">
+                <div class="avatar-container">
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/387/387569.png"
+                    class="bot-avatar rounded-circle"
+                  />
+                  <span class="online-status"></span>
+                </div>
+                <div class="message-content">
+                  <p id="bot-text-${Date.now()}"></p>
+                  <span class="message-time">${getCurrentTime()}</span>
+                </div>
+              </div>
+            `);
+            $msgContainer.append(botWrapper);
+            scrollToBottom();
+
+            // 6) type out reply letter-by-letter
+            const $botText = botWrapper.find("p");
+            typeBotResponse(reply, $botText);
+          }, 800);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
