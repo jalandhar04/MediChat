@@ -1,5 +1,6 @@
-sentence-transformers==2.2.2
 langchain
+langchain_huggingface
+sentence-transformers
 flask
 pypdf
 python-dotenv
@@ -9,5 +10,4 @@ langchain_community
 langchain_google_genai
 langchain_gemini
 langchain_experimental
-langchain_huggingface
 -e .
